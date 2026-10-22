@@ -52,7 +52,7 @@ python eval.py score         # agreement %, most confused theme pairs, every dis
 
 ### Result on a real archive
 
-One real archive: 2,654 likes over 2011-2026, mostly Turkish and English. 22% were placeholders the export puts
+One real archive: 2,654 likes over more than a decade. 22% were placeholders the export puts
 in place of suspended, locked or age-gated posts, or bare links; `stats.py` drops them. Of the 2,051 readable
 likes, the model marked 13% `unclear`: the point was in an image or video the export doesn't include.
 
