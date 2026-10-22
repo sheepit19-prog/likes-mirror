@@ -48,6 +48,24 @@ python eval.py fill          # shows each post, you type a theme number and 1/0 
 python eval.py score         # agreement %, most confused theme pairs, every disagreement
 ```
 
+### Result on a real archive
+
+One real archive: 2,654 likes over 2011-2026, mostly Turkish and English. 22% were placeholders the export puts
+in place of suspended, locked or age-gated posts, or bare links; `stats.py` drops them. Of the 2,051 readable
+likes, the model marked 13% `unclear`: the point was in an image or video the export doesn't include.
+
+50 random likes were labeled blind by a stronger model (Claude Opus 5.5) as a reference, and a human settled
+every disagreement:
+
+| | of 50 |
+|---|---|
+| Theme acceptable | **39 (78%)**: 29 exact matches, 10 where both labels were fair (is a political joke humor or politics?) |
+| Theme or actionable wrong | 11: 5 at the `unclear` boundary, 4 AI tips not marked actionable |
+| Actionable correct | 46 (92%) |
+
+50 posts is a small sample: read 78% as somewhere around 65-87%. Good enough for "what did my attention drift
+toward", not for judging a single post.
+
 If agreement is low for one theme pair, the taxonomy is the problem more often than the model: sharpen the
 two descriptions in `THEMES` (top of `label.py`), delete `out/labels.json`, relabel, and run `eval.py sample` again.
 
