@@ -50,7 +50,11 @@ if __name__ == '__main__':
     else:
         with open(CSV, encoding='utf-8-sig') as f:
             text = f.read()
-        rows = list(csv.DictReader(io.StringIO(text, newline=''), dialect=csv.Sniffer().sniff(text[:2048], ',;')))  # Excel may save with ;
+        try:
+            dialect = csv.Sniffer().sniff(text[:2048], ',;')  # Excel may save with ;
+        except csv.Error:
+            dialect = 'excel'
+        rows = list(csv.DictReader(io.StringIO(text, newline=''), dialect=dialect))
         n, t, act, conf, diffs = score(rows, json.load(open(IDS)), json.load(open('out/labels.json', encoding='utf-8')))
         if not n:
             raise SystemExit('no rows filled in yet')

@@ -25,7 +25,7 @@ Everything runs locally. Your archive, labels and report stay in `out/`, which g
 2. Install and set your key:
    ```
    pip install -r requirements.txt
-   export ANTHROPIC_API_KEY=...
+   export ANTHROPIC_API_KEY=...          # PowerShell: $env:ANTHROPIC_API_KEY="..."
    ```
 3. Run:
    ```
@@ -49,7 +49,7 @@ python eval.py score         # agreement %, most confused theme pairs, every dis
 ```
 
 If agreement is low for one theme pair, the taxonomy is the problem more often than the model: sharpen the
-two descriptions in `THEMES` (top of `label.py`), delete `out/labels.json` and relabel.
+two descriptions in `THEMES` (top of `label.py`), delete `out/labels.json`, relabel, and run `eval.py sample` again.
 
 ## How it works
 
