@@ -92,10 +92,11 @@ def render(s, m=None, goal=None):
             f'{s["share"][t][y]:.0%}</td>' for y in years) + '</tr>'
     body += '<tr><td class="muted">likes</td>' + ''.join(f'<td class="muted">{s["counts"][y]}</td>' for y in years) + '</tr>'
     body += '<tr><td>actionable</td>' + ''.join(f'<td>{s["actionable"][y]:.0%}</td>' for y in years) + '</tr>'
-    shifts = ''.join(f'<p class="shift"><b>{e(t)}</b> went from {a:.0%} of your likes in {e(years[0])} to {b:.0%} in {e(years[-1])}.</p>'
+    shifts = ''.join(f'<p class="shift"><b>{e(t)}</b> went from {a:.0%} of your likes in {e(s["first"])} to {b:.0%} in {e(s["last"])}.</p>'
                      for t, a, b in (s['riser'], s['faller']))
     half = ''.join(f'<tr><td>{e(k)}</td><td>{sum(n for _, n in top)}</td><td style="text-align:left">'
                    + e(', '.join(f'{t} {n}' for t, n in top)) + '</td></tr>' for k, top in s['half'].items())
+    thin = f' Left out, under 30 likes: {e(", ".join(s["thin"]))}.' if s['thin'] else ''
     moves_html = ''
     if m:
         moves_html = f'<h2>Moves toward: {e(goal)}</h2><p>{e(m.mirror)}</p>' + ''.join(
@@ -105,7 +106,7 @@ def render(s, m=None, goal=None):
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>Likes Mirror</title><style>{CSS}</style></head>
 <body><main><h1>Likes Mirror</h1>
-<p class="meta">{s["labeled"]} labeled likes, {e(years[0])} to {e(years[-1])}. Dates are when the post was published.</p>
+<p class="meta">{s["labeled"]} labeled likes, {e(years[0])} to {e(years[-1])}. Dates are when the post was published.{thin}</p>
 <h2>Biggest shifts</h2>{shifts}
 <h2>Theme share by year</h2><div class="wrap"><table><thead><tr><th>theme</th>{head}</tr></thead><tbody>{body}</tbody></table></div>
 <h2>Last two years, by half</h2><div class="wrap"><table><thead><tr><th>half</th><th>likes</th><th style="text-align:left">top themes</th></tr></thead><tbody>{half}</tbody></table></div>

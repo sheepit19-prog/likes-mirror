@@ -1,6 +1,6 @@
 # Run: python test_mirror.py   (no API key needed, the model call is faked)
 from types import SimpleNamespace
-from stats import snowflake_date, read_likes
+from stats import snowflake_date, read_likes, readable
 from label import label_all, normalize, Label
 from analyze import compute
 from report import render, recent_actionable, Moves, Move
@@ -12,6 +12,11 @@ assert snowflake_date('1590000000000000000').date().isoformat() == '2022-11-08'
 
 # sample archive: duplicates collapse
 assert len(read_likes(['sample/like.js'])) == 33
+
+# readable: export placeholders and link-only posts are not content
+assert readable('Plan first. https://t.co/abc') and not readable('https://t.co/abc ') and not readable('')
+assert not readable('This Post is from a suspended account. {learnmore}')
+assert not readable('You’re unable to view this Post because this account owner limits who can view their Posts.')
 
 # normalize: invented ids dropped, unknown theme -> other
 got = normalize([Label(id='1', theme='ai_tech', actionable=True), Label(id='2', theme='cooking', actionable=False),
@@ -34,12 +39,17 @@ live = [['2024-03-01T00:00:00', 'a', 't'], ['2024-08-01T00:00:00', 'b', 't'],
         ['2025-02-01T00:00:00', 'c', 't'], ['2025-09-01T00:00:00', 'd', '<script>alert(1)</script>'],
         [None, 'e', 'undated'], ['2025-10-01T00:00:00', 'f', 'unlabeled']]
 labels = {'a': ['finance', 0], 'b': ['finance', 1], 'c': ['ai_tech', 1], 'd': ['ai_tech', 1], 'e': ['humor', 0]}
-s = compute(live, labels)
+s = compute(live, labels, min_likes=1)
 assert (s['labeled'], s['total'], s['years']) == (4, 6, ['2024', '2025'])
 assert s['share']['finance'] == {'2024': 1.0, '2025': 0.0}
 assert s['actionable'] == {'2024': 0.5, '2025': 1.0}
 assert s['riser'] == ('ai_tech', 0.0, 1.0) and s['faller'] == ('finance', 1.0, 0.0)
 assert s['half'] == {'2024H1': [('finance', 1)], '2024H2': [('finance', 1)], '2025H1': [('ai_tech', 1)], '2025H2': [('ai_tech', 1)]}
+
+# min_likes: a thin year is left out of shares, shifts and half-years, and reported as left out
+t = compute(live + [['2026-01-01T00:00:00', 'g', 't']], {**labels, 'g': ['humor', 0]}, min_likes=2)
+assert (t['years'], t['thin'], t['last']) == (['2024', '2025'], ['2026'], '2025') and '2026H1' not in t['half']
+assert 'Left out, under 30 likes: 2026.' in render(t)
 
 # recent_actionable: last 12 months, actionable, top themes only, newest first
 assert [p[2] for p in recent_actionable(live, labels, {'ai_tech', 'finance'})] == ['<script>alert(1)</script>', 't']
