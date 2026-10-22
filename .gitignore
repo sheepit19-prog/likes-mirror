@@ -1,0 +1,6 @@
+# your data never goes into git
+out/
+/like.js
+data/
+.env
+__pycache__/
