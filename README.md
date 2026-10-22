@@ -62,7 +62,7 @@ every disagreement:
 | | of 50 |
 |---|---|
 | Theme acceptable | **39 (78%)**: 29 exact matches, 10 where both labels were fair (is a political joke humor or politics?) |
-| Theme or actionable wrong | 11: 5 at the `unclear` boundary, 4 AI tips not marked actionable |
+| Theme or actionable wrong | 11: 5 at the `unclear` boundary, 2 plainly wrong themes, 4 missed actionable (3 AI tips, 1 book) |
 | Actionable correct | 46 (92%) |
 
 50 posts is a small sample: read 78% as somewhere around 65-87%. Good enough for "what did my attention drift
