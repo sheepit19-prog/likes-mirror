@@ -17,7 +17,9 @@ Everything runs locally. Your archive, labels and report stay in `out/`, which g
 - **Moves toward your goal** (optional): a short, evidence-backed read of where your feed helps or fights the goal,
   and up to 3 moves. Each one cites a number or a saved post, and comes with a "check before acting" caveat.
 
-<!-- screenshot: add once generated from real labels -->
+![Likes Mirror report for the invented sample data](docs/report.png)
+
+*The report for `sample/like.js` (30 invented posts), labeled by Claude, with `--goal "get my first paying customer"`.*
 
 ## Run it
 
