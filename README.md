@@ -2,27 +2,22 @@
 
 Your X likes are a better record of what you actually care about than anything you'd write down.
 Likes Mirror reads the `like.js` file from your X data export, labels every like with Claude, and shows
-how your interests shifted year by year and how much of what you save is something you can actually use.
+how your interests shifted year by year, how much of what you save is something you can actually use,
+and, if you give it a goal, where your attention contradicts it.
 
-Everything runs locally. Your archive and the labels stay in `out/`, which git ignores.
+Everything runs locally. Your archive, labels and report stay in `out/`, which git ignores.
 
 ## What you get
 
-```
-theme share by year
-theme              2024   2025   2026
-ai_tech             12%    31%    54%
-business             6%    11%    15%
-finance             22%    14%     4%
-humor               19%     9%     5%
-...
-likes               412    388    305
-actionable          21%    38%    62%
-```
+`out/report.html`, a single file with no scripts or external assets:
 
-Read it as: "finance went from a fifth of my feed to almost nothing, and two thirds of what I like now is
-something I could act on". That's the kind of thing you can't see from inside the feed.
-(Numbers above are illustrative. `sample/like.js` has 90 invented posts to try the pipeline on.)
+- **Biggest shifts:** "finance went from 22% of your likes in 2024 to 4% in 2026."
+- **Theme share by year,** with the share of likes that are actionable (a technique, tool or resource you could apply).
+- **Last two years by half-year,** to see what rose and what died.
+- **Moves toward your goal** (optional): a short, evidence-backed read of where your feed helps or fights the goal,
+  and up to 3 moves. Each one cites a number or a saved post, and comes with a "check before acting" caveat.
+
+<!-- screenshot: add once generated from real labels -->
 
 ## Run it
 
@@ -32,14 +27,29 @@ something I could act on". That's the kind of thing you can't see from inside th
    pip install -r requirements.txt
    export ANTHROPIC_API_KEY=...
    ```
-3. Run the three steps:
+3. Run:
    ```
    python stats.py path/to/like.js   # dedupe, date each like from its post id -> out/likes.json
    python label.py                   # Claude labels theme + actionable -> out/labels.json
-   python analyze.py                 # tables above
+   python analyze.py                 # quick look in the terminal
+   python report.py --goal "get my first 10 paying customers"   # -> out/report.html
    ```
 
-Try `python label.py --limit 100` first to see the labels and cost on a small slice.
+Try `python label.py --limit 100` first to see labels and cost on a small slice. `report.py` without `--goal`
+makes no API call. `sample/like.js` has 90 invented posts to try the pipeline on.
+
+## Check the labels yourself
+
+A labeler you haven't measured is a guess. `eval.py` gives you a blind check:
+
+```
+python eval.py sample        # 50 random likes -> out/eval.csv, without the model's labels
+# fill in your_theme and your_actionable (1 or 0) in any spreadsheet
+python eval.py score         # agreement %, most confused theme pairs, every disagreement
+```
+
+If agreement is low for one theme pair, the taxonomy is the problem more often than the model: sharpen the
+two descriptions in `THEMES` (top of `label.py`), delete `out/labels.json` and relabel.
 
 ## How it works
 
@@ -50,8 +60,10 @@ Try `python label.py --limit 100` first to see the labels and cost on a small sl
   Pydantic object (`theme`, `actionable`) via structured outputs, so there is no JSON parsing by hand. Unknown
   themes fall back to `other` and ids the model invents are dropped.
 - **Pay once.** Labels are cached by post id and saved after every batch. A re-run, or a crash halfway,
-  only pays for likes that aren't labeled yet. The script prints the token count and dollar cost at the end.
-  On Haiku 5.5, a few thousand likes cost cents.
+  only pays for likes that aren't labeled yet. Scripts print token counts and dollar cost.
+- **Moves are grounded.** `report.py --goal` makes one Claude Opus 5.5 call with your theme table and up to 120
+  recent actionable likes from your top themes. The prompt forbids invented numbers and motivational filler.
+  Everything the model returns is HTML-escaped before it reaches the page.
 - **Your taxonomy.** Themes are a plain dict at the top of `label.py`. Edit it to match your feed.
 
 ## Tests
@@ -60,4 +72,5 @@ Try `python label.py --limit 100` first to see the labels and cost on a small sl
 python test_mirror.py
 ```
 
-No API key needed: the model call is faked, so the test covers id-to-date, deduping, label cleanup and the cache.
+No API key needed: model calls are faked. Covers id-to-date, deduping, label cleanup, the cache, the yearly math,
+HTML escaping and eval scoring.
