@@ -16,6 +16,8 @@ def load():
 
 def compute(live, labels, min_likes=30):
     rows = [(d, labels[tid]) for d, tid, _ in live if d and tid in labels]
+    unclear = sum(theme == 'unclear' for _, (theme, _) in rows)
+    rows = [r for r in rows if r[1][0] != 'unclear']  # meaning was in media the export doesn't include
     tab = collections.defaultdict(collections.Counter)
     act = collections.Counter()
     tot = collections.Counter()
@@ -37,7 +39,7 @@ def compute(live, labels, min_likes=30):
     first, last = years[0], years[-1]
     delta = sorted(themes, key=lambda t: share[t][last] - share[t][first])
     return {
-        'labeled': len(rows), 'total': len(live), 'years': years, 'thin': thin, 'first': first, 'last': last, 'themes': themes,
+        'labeled': len(rows), 'unclear': unclear, 'total': len(live), 'years': years, 'thin': thin, 'first': first, 'last': last, 'themes': themes,
         'share': share, 'counts': dict(tot), 'actionable': {y: act[y] / tot[y] for y in years},
         'half': {k: half[k].most_common(4) for k in sorted(half)},
         'riser': (delta[-1], share[delta[-1]][first], share[delta[-1]][last]),
@@ -48,7 +50,7 @@ def compute(live, labels, min_likes=30):
 if __name__ == '__main__':
     s = compute(*load())
     years = s['years']
-    print('labeled', s['labeled'], 'of', s['total'])
+    print('labeled', s['labeled'], 'of', s['total'], '| unclear from text alone:', s['unclear'])
     if s['thin']:
         print('left out (under 30 likes):', ', '.join(s['thin']))
     print('\ntheme share by year')

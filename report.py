@@ -96,6 +96,7 @@ def render(s, m=None, goal=None):
                      for t, a, b in (s['riser'], s['faller']))
     half = ''.join(f'<tr><td>{e(k)}</td><td>{sum(n for _, n in top)}</td><td style="text-align:left">'
                    + e(', '.join(f'{t} {n}' for t, n in top)) + '</td></tr>' for k, top in s['half'].items())
+    unclear = f' {s["unclear"]} more could not be read from text alone (the point was in an image or link) and are left out.' if s['unclear'] else ''
     thin = f' Left out, under 30 likes: {e(", ".join(s["thin"]))}.' if s['thin'] else ''
     moves_html = ''
     if m:
@@ -106,7 +107,7 @@ def render(s, m=None, goal=None):
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>Likes Mirror</title><style>{CSS}</style></head>
 <body><main><h1>Likes Mirror</h1>
-<p class="meta">{s["labeled"]} labeled likes, {e(years[0])} to {e(years[-1])}. Dates are when the post was published.{thin}</p>
+<p class="meta">{s["labeled"]} likes, {e(years[0])} to {e(years[-1])}. Dates are when the post was published.{unclear}{thin}</p>
 <h2>Biggest shifts</h2>{shifts}
 <h2>Theme share by year</h2><div class="wrap"><table><thead><tr><th>theme</th>{head}</tr></thead><tbody>{body}</tbody></table></div>
 <h2>Last two years, by half</h2><div class="wrap"><table><thead><tr><th>half</th><th>likes</th><th style="text-align:left">top themes</th></tr></thead><tbody>{half}</tbody></table></div>

@@ -51,6 +51,11 @@ t = compute(live + [['2026-01-01T00:00:00', 'g', 't']], {**labels, 'g': ['humor'
 assert (t['years'], t['thin'], t['last']) == (['2024', '2025'], ['2026'], '2025') and '2026H1' not in t['half']
 assert 'Left out, under 30 likes: 2026.' in render(t)
 
+# unclear: counted, kept out of shares and themes, named in the report
+u = compute(live + [['2025-11-01T00:00:00', 'h', 'lol https://t.co/x']], {**labels, 'h': ['unclear', 0]}, min_likes=1)
+assert u['unclear'] == 1 and u['labeled'] == 4 and 'unclear' not in u['themes'] and u['share'] == s['share']
+assert '1 more could not be read from text alone' in render(u)
+
 # recent_actionable: last 12 months, actionable, top themes only, newest first
 assert [p[2] for p in recent_actionable(live, labels, {'ai_tech', 'finance'})] == ['<script>alert(1)</script>', 't']
 
