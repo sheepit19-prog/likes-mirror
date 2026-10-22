@@ -44,7 +44,7 @@ A labeler you haven't measured is a guess. `eval.py` gives you a blind check:
 
 ```
 python eval.py sample        # 50 random likes -> out/eval.csv, without the model's labels
-# fill in your_theme and your_actionable (1 or 0) in any spreadsheet
+python eval.py fill          # shows each post, you type a theme number and 1/0 (or edit the csv in a spreadsheet)
 python eval.py score         # agreement %, most confused theme pairs, every disagreement
 ```
 
