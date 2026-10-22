@@ -36,7 +36,7 @@ Everything runs locally. Your archive, labels and report stay in `out/`, which g
    ```
 
 Try `python label.py --limit 100` first to see labels and cost on a small slice. `report.py` without `--goal`
-makes no API call. `sample/like.js` has 90 invented posts to try the pipeline on.
+makes no API call. `sample/like.js` has 30 invented posts to try the pipeline on.
 
 ## Check the labels yourself
 

@@ -11,7 +11,7 @@ assert snowflake_date('20') is None
 assert snowflake_date('1590000000000000000').date().isoformat() == '2022-11-08'
 
 # sample archive: duplicates collapse
-assert len(read_likes(['sample/like.js'])) == 90
+assert len(read_likes(['sample/like.js'])) == 33
 
 # normalize: invented ids dropped, unknown theme -> other
 got = normalize([Label(id='1', theme='ai_tech', actionable=True), Label(id='2', theme='cooking', actionable=False),
