@@ -4,7 +4,7 @@ from stats import snowflake_date, read_likes, readable
 from label import label_all, normalize, Label
 from analyze import compute
 from report import render, recent_actionable, Moves, Move
-from eval import score
+from eval import score, fill
 
 # snowflake id -> date
 assert snowflake_date('20') is None
@@ -67,4 +67,11 @@ rows = [{'n': '1', 'text': 'x', 'your_theme': 'finance', 'your_actionable': '1'}
         {'n': '3', 'text': 'z', 'your_theme': '', 'your_actionable': ''}]
 n, t, act, conf, diffs = score(rows, ['b', 'a', 'c'], labels)
 assert (n, t, act, conf) == (2, 1, 2, [(('ai_tech', 'finance'), 1)]) and len(diffs) == 1
+
+# eval fill: filled rows skipped, bad input asked again, saved after every row
+rows = [{'n': '1', 'text': 'a', 'your_theme': 'humor', 'your_actionable': '0'},
+        {'n': '2', 'text': 'b', 'your_theme': '', 'your_actionable': ''}]
+answers, saved = iter(['99', 'x', '1', '7', '1']), []
+fill(rows, lambda _: next(answers), lambda r: saved.append(r[1]['your_theme']))
+assert rows[1]['your_theme'] == 'ai_tech' and rows[1]['your_actionable'] == '1' and saved == ['ai_tech']
 print('ok')
